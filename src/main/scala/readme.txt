@@ -38,7 +38,7 @@ truncate mts_bars.td_bars_3600;
 
 select * from mts_bars.td_bars_3600;
 
-insert into mts_bars.td_bars_3600(ticker_id,ddate,bar_1) values(1,'2019-01-25',
+insert into mts_bars.td_bars_3600(ticker_id,ddate,bar_1,bar_2) values(1,'2019-01-25',
 {
   'bar_width_sec' : '3659',
   'btype' : 'd',
@@ -53,4 +53,101 @@ insert into mts_bars.td_bars_3600(ticker_id,ddate,bar_1) values(1,'2019-01-25',
   'ticks_cnt' : '35746',
   'ts_begin' : '1548839178248',
   'ts_end' : '1548839188248'
-});
+},
+{
+  'bar_width_sec' : '3659',
+  'btype' : 'u',
+  'c' : '1.67173',
+  'disp' : '0.0017',
+  'h' : '1.67184',
+  'h_body' : '0.0013',
+  'h_shad' : '0.0011',
+  'l' : '1.67141',
+  'log_co' : '0.023',
+  'o' : '1.67156',
+  'ticks_cnt' : '35746',
+  'ts_begin' : '1548839178248',
+  'ts_end' : '1548839188248'
+}
+);
+
+insert into mts_bars.td_bars_3600(ticker_id,ddate,bar_1,bar_2) values(2,'2019-01-25',
+{
+  'bar_width_sec' : '3659',
+  'btype' : 'd',
+  'c' : '1.45',
+  'disp' : '0.0017',
+  'h' : '1.67184',
+  'h_body' : '0.0013',
+  'h_shad' : '0.0011',
+  'l' : '1.67141',
+  'log_co' : '0.023',
+  'o' : '1.67156',
+  'ticks_cnt' : '35746',
+  'ts_begin' : '1548839178248',
+  'ts_end' : '1548839188248'
+},
+{
+  'bar_width_sec' : '3659',
+  'btype' : 'd',
+  'c' : '1.56',
+  'disp' : '0.0017',
+  'h' : '1.67184',
+  'h_body' : '0.0013',
+  'h_shad' : '0.0011',
+  'l' : '1.67141',
+  'log_co' : '0.023',
+  'o' : '1.67156',
+  'ticks_cnt' : '35746',
+  'ts_begin' : '1548839178248',
+  'ts_end' : '1548839188248'
+}
+);
+
+insert into mts_bars.td_bars_3600(ticker_id,ddate,bar_1,bar_2,bar_3) values(3,'2019-01-25',
+{
+  'bar_width_sec' : '3659',
+  'btype' : 'd',
+  'c' : '1.45',
+  'disp' : '0.0017',
+  'h' : '1.67184',
+  'h_body' : '0.0013',
+  'h_shad' : '0.0011',
+  'l' : '1.67141',
+  'log_co' : '0.023',
+  'o' : '1.67156',
+  'ticks_cnt' : '35746',
+  'ts_begin' : '1548839178248',
+  'ts_end' : '1548839188248'
+},
+{
+  'bar_width_sec' : '3659',
+  'btype' : 'd',
+  'c' : '1.56',
+  'disp' : '0.0017',
+  'h' : '1.67184',
+  'h_body' : '0.0013',
+  'h_shad' : '0.0011',
+  'l' : '1.67141',
+  'log_co' : '0.023',
+  'o' : '1.67156',
+  'ticks_cnt' : '35746',
+  'ts_begin' : '1548839178248',
+  'ts_end' : '1548839188248'
+},
+{
+  'bar_width_sec' : '3659',
+  'btype' : 'd',
+  'c' : '1.56',
+  'disp' : '0.0017',
+  'h' : '1.67184',
+  'h_body' : '0.0013',
+  'h_shad' : '0.0011',
+  'l' : '1.67141',
+  'log_co' : '0.023',
+  'o' : '1.67156',
+  'ticks_cnt' : '35746',
+  'ts_begin' : '1548839178248',
+  'ts_end' : '1548839188248'
+}
+);
