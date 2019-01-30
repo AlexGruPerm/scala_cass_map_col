@@ -16,7 +16,7 @@ object ScalaCassMapCol extends App {
   }
 
   case class bars(ticker_id :Int,
-                  ddate     :LocalDate,//java.util.Date,
+                  ddate     :LocalDate,
                   tdBars    :Seq[(String,Map[String,String])]){
     override def toString = "ticker_id="+ddate+"  ["+ddate+"]" + tdBars.toString()
     def getBarByName(barName : String) = {
@@ -27,7 +27,7 @@ object ScalaCassMapCol extends App {
   val rowToBars = (row : Row, colNames : Seq[String]) => {
     new bars(
       row.getInt("ticker_id"),
-      row.getDate("ddate"),//new Date(row.getDate("ddate").getMillisSinceEpoch),
+      row.getDate("ddate"),
       for (cn <- colNames) yield
         (cn,row.getMap(cn, classOf[String], classOf[String]).asScala.toMap)
     )
@@ -38,7 +38,6 @@ object ScalaCassMapCol extends App {
   private val cluster = Cluster.builder().addContactPoint(node).build()
   val session = cluster.connect()
 
-  /*EXAMPLE OF SELECT.*/
   val queryTicksCountTotal =
     """ select *
           from mts_bars.td_bars_3600 """
@@ -88,7 +87,7 @@ object ScalaCassMapCol extends App {
 
 
   val querySaveCountTotal =
-    """ insert into mts_bars.td_bars_3600(ticker_id,ddate, bar_1,bar_2,bar_3,bar_4) values(?,?, ?,?,?,?) """
+    """ insert into mts_bars.td_bars_3600(ticker_id,ddate,  bar_1,bar_2,bar_3,bar_4) values(?,?,  ?,?,?,?) """
   val pquerySaveCountTotal = session.prepare(querySaveCountTotal)
 
   val boundSaveCountTotal = pquerySaveCountTotal.bind()

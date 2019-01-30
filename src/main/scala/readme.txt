@@ -1,7 +1,8 @@
 //for 1 hour bars, 1h = 3600 sec.
+
 CREATE TABLE mts_bars.td_bars_3600(
   ticker_id int,
-	ddate     date,
+  ddate     date,
   bar_1 map<text,text>,
   bar_2 map<text,text>,
   bar_3 map<text,text>,
