@@ -1,5 +1,5 @@
-
-import com.datastax.driver.core.{Cluster, LocalDate, Row}
+import bcpackage._
+import com.datastax.driver.core.Cluster
 import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters
@@ -13,24 +13,6 @@ object ScalaCassMapCol extends App {
 
   object slog extends Serializable {
     @transient lazy val log = LoggerFactory.getLogger(getClass.getName)
-  }
-
-  case class bars(ticker_id :Int,
-                  ddate     :LocalDate,
-                  tdBars    :Seq[(String,Map[String,String])]){
-    override def toString = "ticker_id="+ddate+"  ["+ddate+"]" + tdBars.toString()
-    def getBarByName(barName : String) = {
-      tdBars.filter(p => (p._1==barName)).headOption.get._2
-    }
-  }
-
-  val rowToBars = (row : Row, colNames : Seq[String]) => {
-    new bars(
-      row.getInt("ticker_id"),
-      row.getDate("ddate"),
-      for (cn <- colNames) yield
-        (cn,row.getMap(cn, classOf[String], classOf[String]).asScala.toMap)
-    )
   }
 
   slog.log.debug("BEGIN")
@@ -50,15 +32,19 @@ object ScalaCassMapCol extends App {
     * Column names by pattern bar_x (where x from 1 to N) for MAP fields.
     */
   val colDef = session.execute(bound).getColumnDefinitions
+
   val colsBarsNames :Seq[String] = for (thisColumn <- colDef.asList().asScala if thisColumn.getName().substring(0,3) == "bar") yield
     thisColumn.getName()
 
-  val dsTicksCntTotalRow : Seq[bars] = JavaConverters.asScalaIteratorConverter(session.execute(bound).all().iterator())
+  /**
+    * convRow contains function(s) to convert Cassandra row into objects.
+    */
+  val convRow = new converterRows
+
+  val dsTicksCntTotalRow : Seq[ROW_BARS] = JavaConverters.asScalaIteratorConverter(session.execute(bound).all().iterator())
     .asScala
-    .toSeq.map(rowToBars(_,colsBarsNames))
+    .toSeq.map(convRow.rowToBars(_,colsBarsNames))
     .sortBy(ft => ft.ticker_id)(Ordering[Int].reverse)
-
-
 
   slog.log.debug("===================================================================")
   slog.log.debug("ROWS SIZE="+dsTicksCntTotalRow.size)
@@ -66,12 +52,12 @@ object ScalaCassMapCol extends App {
   for (rowTicksCntTotalRow <- dsTicksCntTotalRow){
     slog.log.debug("ticker_id = "+rowTicksCntTotalRow.ticker_id+" for ["+rowTicksCntTotalRow.ddate+"]")
     slog.log.debug("  BARS COUNT = "+rowTicksCntTotalRow.tdBars.size)
-    slog.log.debug("    BARS WITH DATA = "+rowTicksCntTotalRow.tdBars.filter(p => (p._2.nonEmpty)).size)
+    slog.log.debug("    BARS WITH DATA = "+rowTicksCntTotalRow.tdBars.filter(p => (p.barProp.nonEmpty)).size)
     /**
       * local loop by nonEmpty bars.
       */
-      for(neBar <- rowTicksCntTotalRow.tdBars.filter(p => (p._2.nonEmpty))){
-        slog.log.debug("      ("+neBar._1+") = "+neBar._2)
+      for(neBar <- rowTicksCntTotalRow.tdBars.filter(p => (p.barProp.nonEmpty))){
+        slog.log.debug("      ("+neBar.barName+") = "+neBar.barProp)
       }
     slog.log.debug(" ")
   }
@@ -85,9 +71,9 @@ object ScalaCassMapCol extends App {
   val b : Map[String,String] = dsTicksCntTotalRow(2).getBarByName(bOneName)
   slog.log.debug("b_tickerId = "+b_tickerId+" ("+bOneName+") ="+b)
 
-
   val querySaveCountTotal =
-    """ insert into mts_bars.td_bars_3600(ticker_id,ddate,  bar_1,bar_2,bar_3,bar_4) values(?,?,  ?,?,?,?) """
+    """ insert into mts_bars.td_bars_3600(ticker_id,ddate,  bar_1,bar_2,bar_3,bar_4)
+                                   values(?,?,              ?,?,?,?) """
   val pquerySaveCountTotal = session.prepare(querySaveCountTotal)
 
   val boundSaveCountTotal = pquerySaveCountTotal.bind()
@@ -99,6 +85,11 @@ object ScalaCassMapCol extends App {
     .setMap("bar_4",b.asJava)
 
   val rsBar = session.execute(boundSaveCountTotal).one()
+
+  slog.log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  val bc = dsTicksCntTotalRow(2).getBarFullByName("bar_1").barc
+  slog.log.debug("barc.ts_begin = "+bc.ts_begin +"  o="+ bc.o+"  c="+bc.c+" btype="+bc.btype)
+  slog.log.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
   session.close()
 }
