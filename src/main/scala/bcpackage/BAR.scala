@@ -5,9 +5,6 @@ import scala.collection.JavaConverters._
 //import com.datastax.driver.core.LocalDate
 
 class converterRows{
-  /**
-    * Function to convert one row of DataSet into object bar
-    */
   val rowToBars = (row : Row, colNames : Seq[String]) => {
     new ROW_BARS(
       row.getInt("ticker_id"),
